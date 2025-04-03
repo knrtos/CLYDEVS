@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Health Metrics Table</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: transparent;
+            color: #054607;
+            font-family: "Comfortaa", sans-serif;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 10px;
+            font-size: 20px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        th, td {
+            border: 5px solid #498202;
+            padding: 20px;
+            color: #054607;
+            background: rgba(254, 255, 234);
+            border-radius: 5px; /* Rounded edges */
+            text-align: center; /* Center align all text in th and td */
+        }
+
+        th {
+            background-color: #82A436;
+            color: white;
+            font-weight: bold;
+        }
+
+        td:hover {
+            background-color: #447804;
+            color: white;
+            cursor: pointer;
+        }
+
+        .bg-warning {
+            background-color: #498202;
+            color: white;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        // Load data from local storage or initialize with default values
+        var healthMetrics = JSON.parse(localStorage.getItem('healthMetrics')) || [
+            {
+                date: "3/10/25",
+                time: "10 A.M.",
+                temperature: "35.2 CELSIUS",
+                pulseRate: "98 BPM",
+                respiratoryRate: "16 BPM"
+            }
+        ];
+
+        var tbl = '<table class="table table-hover">';
+        tbl += '<thead><tr><th>DATE</th><th>TIME</th><th>TEMPERATURE</th><th>PULSE RATE</th><th>RESPIRATORY RATE</th></tr></thead>';
+        tbl += '<tbody>';
+        
+        // Populate the table with data
+        $.each(healthMetrics, function(index, item) {
+            tbl += `<tr>
+                        <td><div class="row_data date" edit_type="click" contenteditable="true">${item.date}</div></td>
+                        <td><div class="row_data time" edit_type="click" contenteditable="true">${item.time}</div></td>
+                        <td><div class="row_data temperature" edit_type="click" contenteditable="true">${item.temperature}</div></td>
+                        <td><div class="row_data pulseRate" edit_type="click" contenteditable="true">${item.pulseRate}</div></td>
+                        <td><div class="row_data respiratoryRate" edit_type="click" contenteditable="true">${item.respiratoryRate}</div></td>
+                    </tr>`;
+        });
+        
+        tbl += '</tbody></table>';
+        
+        $('.tbl_user_data').html(tbl);
+
+        // Editable functionality for the health metrics columns
+        $(document).on('click', '.row_data', function(event) {
+            event.preventDefault(); 
+            if ($(this).attr('edit_type') == 'button') return false;
+            $(this).attr('contenteditable', 'true').addClass('bg-warning').focus();
+        });
+
+        $(document).on('focusout', '.row_data', function(event) {
+            event.preventDefault();
+            if ($(this).attr('edit_type') == 'button') return false;
+            $(this).removeClass('bg-warning');
+            saveData(); // Save data on focus out
+        });
+
+        // Save data to local storage
+        function saveData() {
+            var dataToSave = [];
+            $('tbody tr').each(function() {
+                var date = $(this).find('.date').text();
+                var time = $(this).find('.time').text();
+                var temperature = $(this).find('.temperature').text();
+                var pulseRate = $(this).find('.pulseRate').text();
+                var respiratoryRate = $(this).find('.respiratoryRate').text();
+                dataToSave.push({ date: date, time: time, temperature: temperature, pulseRate: pulseRate, respiratoryRate: respiratoryRate });
+            });
+            localStorage.setItem('healthMetrics', JSON.stringify(dataToSave));
+        }
+    });
+    </script>
+
+</head>
+<body>
+    <div class="tbl_user_data"></div>
+</body>
+</html>
